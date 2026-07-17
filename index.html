@@ -154,6 +154,10 @@ code, .mono { font-family: 'IBM Plex Mono', monospace; }
     <div class="nav-item" onclick="show('diccionario')">Diccionario de atributos</div>
   </div>
   <div class="nav-section" style="margin-top:0.5rem">
+    <div class="nav-label">LinkedIn</div>
+    <div class="nav-item" onclick="show('queries-linkedin')">Queries de LinkedIn</div>
+  </div>
+  <div class="nav-section" style="margin-top:0.5rem">
     <div class="nav-label">Técnico</div>
     <div class="nav-item" onclick="show('tecnico')">Stack y arquitectura</div>
     <div class="nav-item" onclick="show('ejemplos')">Ejemplos SQL</div>
@@ -169,16 +173,16 @@ code, .mono { font-family: 'IBM Plex Mono', monospace; }
     <p>Base de datos consolidada de fuentes públicas de Guatemala. Acceso de solo lectura vía PostgreSQL con vistas normalizadas por fuente.</p>
     <div class="badge-row">
       <span class="badge badge-green">PostgreSQL 15</span>
-      <span class="badge badge-blue">29 vistas</span>
+      <span class="badge badge-blue">36 vistas</span>
       <span class="badge badge-purple">Solo lectura</span>
       <span class="badge badge-yellow">Guatemala</span>
     </div>
   </div>
   <div class="stats">
-    <div class="stat"><div class="stat-num">29</div><div class="stat-label">Vistas</div></div>
-    <div class="stat"><div class="stat-num">35</div><div class="stat-label">Tablas</div></div>
-    <div class="stat"><div class="stat-num">18</div><div class="stat-label">Fuentes</div></div>
-    <div class="stat"><div class="stat-num">359</div><div class="stat-label">Atributos</div></div>
+    <div class="stat"><div class="stat-num">36</div><div class="stat-label">Vistas</div></div>
+    <div class="stat"><div class="stat-num">42</div><div class="stat-label">Tablas</div></div>
+    <div class="stat"><div class="stat-num">22</div><div class="stat-label">Fuentes</div></div>
+    <div class="stat"><div class="stat-num">435</div><div class="stat-label">Atributos</div></div>
   </div>
   <div class="sec-title"><span class="icon">📦</span> Fuentes disponibles</div>
   <div id="origen-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:2rem;"></div>
@@ -234,6 +238,181 @@ code, .mono { font-family: 'IBM Plex Mono', monospace; }
   <div class="sec-title"><span class="icon">📖</span> Diccionario de atributos</div>
   <div class="search-wrap"><input type="text" id="search-dic" placeholder="Buscar atributo..." oninput="filterDic()"></div>
   <div id="dic-grid"></div>
+</div>
+
+<!-- QUERIES LINKEDIN -->
+<div class="section" id="section-queries-linkedin">
+  <div class="sec-title"><span class="icon">🔗</span> Queries de LinkedIn</div>
+  <p style="color:var(--text2);font-size:13px;margin-bottom:1.25rem">Todas las tablas detalle de LinkedIn se relacionan con <span class="mono" style="color:var(--text)">v_linkedin_perfiles</span> mediante <span class="mono" style="color:var(--text)">perfil_id</span> (llave más estable para joins internos) y <span class="mono" style="color:var(--text)">linkedin_num_id</span> (identificador fuente, útil para búsquedas).</p>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Perfil con experiencia</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span>
+  p.perfil_id,
+  p.linkedin_num_id,
+  p.url,
+  p.posicion,
+  p.empresa_actual_name,
+  e.orden,
+  e.experiencia_title,
+  e.experiencia_company,
+  e.experiencia_company_id,
+  e.experiencia_start_date,
+  e.experiencia_end_date
+<span class="kw">FROM</span> public.v_linkedin_perfiles p
+<span class="kw">JOIN</span> public.v_linkedin_experiencia e
+  <span class="kw">ON</span> e.perfil_id = p.perfil_id
+<span class="kw">WHERE</span> p.linkedin_num_id = <span class="str">'1303436061'</span>
+<span class="kw">ORDER BY</span> e.orden;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Perfil con educación</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span>
+  p.perfil_id,
+  p.linkedin_num_id,
+  p.url,
+  p.posicion,
+  ed.orden,
+  ed.educacion_title,
+  ed.educacion_degree,
+  ed.educacion_field,
+  ed.educacion_start_year,
+  ed.educacion_end_year
+<span class="kw">FROM</span> public.v_linkedin_perfiles p
+<span class="kw">JOIN</span> public.v_linkedin_educacion ed
+  <span class="kw">ON</span> ed.perfil_id = p.perfil_id
+<span class="kw">WHERE</span> p.linkedin_num_id = <span class="str">'1303436061'</span>
+<span class="kw">ORDER BY</span> ed.orden;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Perfil con actividad</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span>
+  p.perfil_id,
+  p.linkedin_num_id,
+  p.url,
+  a.orden,
+  a.actividad_id,
+  a.actividad_title,
+  a.actividad_link,
+  a.actividad_interaction
+<span class="kw">FROM</span> public.v_linkedin_perfiles p
+<span class="kw">JOIN</span> public.v_linkedin_actividad a
+  <span class="kw">ON</span> a.perfil_id = p.perfil_id
+<span class="kw">WHERE</span> p.linkedin_num_id = <span class="str">'1303436061'</span>
+<span class="kw">ORDER BY</span> a.orden;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Perfil con idiomas</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span>
+  p.perfil_id,
+  p.linkedin_num_id,
+  p.url,
+  i.orden,
+  i.idioma_title,
+  i.idioma_subtitle
+<span class="kw">FROM</span> public.v_linkedin_perfiles p
+<span class="kw">JOIN</span> public.v_linkedin_idiomas i
+  <span class="kw">ON</span> i.perfil_id = p.perfil_id
+<span class="kw">WHERE</span> p.linkedin_num_id = <span class="str">'1303436061'</span>
+<span class="kw">ORDER BY</span> i.orden;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Perfil con certificaciones</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span>
+  p.perfil_id,
+  p.linkedin_num_id,
+  p.url,
+  c.orden,
+  c.certificacion_title,
+  c.certificacion_subtitle,
+  c.certificacion_meta,
+  c.certificacion_credential_id,
+  c.certificacion_credential_url
+<span class="kw">FROM</span> public.v_linkedin_perfiles p
+<span class="kw">JOIN</span> public.v_linkedin_certificaciones c
+  <span class="kw">ON</span> c.perfil_id = p.perfil_id
+<span class="kw">WHERE</span> p.linkedin_num_id = <span class="str">'1303436061'</span>
+<span class="kw">ORDER BY</span> c.orden;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Perfil con todas las tablas detalle <span style="color:var(--yellow)">— puede multiplicar filas</span></div>
+  <div class="sql-block"><pre><span class="cmt">-- Esta consulta puede multiplicar filas porque cada detalle tiene varias filas por perfil.
+-- Usarla solo cuando se necesita combinar todo en formato tabular.</span>
+<span class="kw">SELECT</span>
+  p.perfil_id,
+  p.linkedin_num_id,
+  p.url,
+  p.posicion,
+  p.empresa_actual_name,
+  e.orden <span class="kw">AS</span> experiencia_orden,
+  e.experiencia_title,
+  e.experiencia_company,
+  ed.orden <span class="kw">AS</span> educacion_orden,
+  ed.educacion_title,
+  a.orden <span class="kw">AS</span> actividad_orden,
+  a.actividad_title,
+  i.orden <span class="kw">AS</span> idioma_orden,
+  i.idioma_title,
+  c.orden <span class="kw">AS</span> certificacion_orden,
+  c.certificacion_title
+<span class="kw">FROM</span> public.v_linkedin_perfiles p
+<span class="kw">LEFT JOIN</span> public.v_linkedin_experiencia e
+  <span class="kw">ON</span> e.perfil_id = p.perfil_id
+<span class="kw">LEFT JOIN</span> public.v_linkedin_educacion ed
+  <span class="kw">ON</span> ed.perfil_id = p.perfil_id
+<span class="kw">LEFT JOIN</span> public.v_linkedin_actividad a
+  <span class="kw">ON</span> a.perfil_id = p.perfil_id
+<span class="kw">LEFT JOIN</span> public.v_linkedin_idiomas i
+  <span class="kw">ON</span> i.perfil_id = p.perfil_id
+<span class="kw">LEFT JOIN</span> public.v_linkedin_certificaciones c
+  <span class="kw">ON</span> c.perfil_id = p.perfil_id
+<span class="kw">WHERE</span> p.linkedin_num_id = <span class="str">'1303436061'</span>;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Conteos por perfil sin multiplicar filas</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span>
+  p.perfil_id,
+  p.linkedin_num_id,
+  p.url,
+  count(<span class="kw">DISTINCT</span> e.orden) <span class="kw">AS</span> total_experiencia,
+  count(<span class="kw">DISTINCT</span> ed.orden) <span class="kw">AS</span> total_educacion,
+  count(<span class="kw">DISTINCT</span> a.orden) <span class="kw">AS</span> total_actividad,
+  count(<span class="kw">DISTINCT</span> i.orden) <span class="kw">AS</span> total_idiomas,
+  count(<span class="kw">DISTINCT</span> c.orden) <span class="kw">AS</span> total_certificaciones
+<span class="kw">FROM</span> public.v_linkedin_perfiles p
+<span class="kw">LEFT JOIN</span> public.v_linkedin_experiencia e
+  <span class="kw">ON</span> e.perfil_id = p.perfil_id
+<span class="kw">LEFT JOIN</span> public.v_linkedin_educacion ed
+  <span class="kw">ON</span> ed.perfil_id = p.perfil_id
+<span class="kw">LEFT JOIN</span> public.v_linkedin_actividad a
+  <span class="kw">ON</span> a.perfil_id = p.perfil_id
+<span class="kw">LEFT JOIN</span> public.v_linkedin_idiomas i
+  <span class="kw">ON</span> i.perfil_id = p.perfil_id
+<span class="kw">LEFT JOIN</span> public.v_linkedin_certificaciones c
+  <span class="kw">ON</span> c.perfil_id = p.perfil_id
+<span class="kw">WHERE</span> p.linkedin_num_id = <span class="str">'1303436061'</span>
+<span class="kw">GROUP BY</span> p.perfil_id, p.linkedin_num_id, p.url;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Buscar perfiles por empresa en experiencia</div>
+  <div class="sql-block"><pre><span class="kw">SELECT DISTINCT</span>
+  p.perfil_id,
+  p.linkedin_num_id,
+  p.url,
+  p.posicion,
+  p.empresa_actual_name
+<span class="kw">FROM</span> public.v_linkedin_perfiles p
+<span class="kw">JOIN</span> public.v_linkedin_experiencia e
+  <span class="kw">ON</span> e.perfil_id = p.perfil_id
+<span class="kw">WHERE</span> e.experiencia_company <span class="kw">ILIKE</span> <span class="str">'%banco%'</span>
+<span class="kw">ORDER BY</span> p.linkedin_num_id
+<span class="kw">LIMIT</span> 100;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Buscar perfiles por centro educativo</div>
+  <div class="sql-block"><pre><span class="kw">SELECT DISTINCT</span>
+  p.perfil_id,
+  p.linkedin_num_id,
+  p.url,
+  p.posicion,
+  ed.educacion_title
+<span class="kw">FROM</span> public.v_linkedin_perfiles p
+<span class="kw">JOIN</span> public.v_linkedin_educacion ed
+  <span class="kw">ON</span> ed.perfil_id = p.perfil_id
+<span class="kw">WHERE</span> ed.educacion_title <span class="kw">ILIKE</span> <span class="str">'%universidad%'</span>
+<span class="kw">ORDER BY</span> p.linkedin_num_id
+<span class="kw">LIMIT</span> 100;</pre></div>
 </div>
 
 <!-- TECNICO -->
@@ -314,6 +493,33 @@ relaciones.id_entidad_origen                   →  entidades._id</pre>
 <span class="kw">WHERE</span> r.nombre <span class="kw">ILIKE</span> <span class="str">'%RODRIGUEZ%'</span>
 <span class="kw">LIMIT</span> 50;</pre></div>
 
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Buscar perfil de LinkedIn por empresa actual</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span> linkedin_num_id, entidad_id, url, posicion, empresa_actual_name
+<span class="kw">FROM</span> v_linkedin_perfiles
+<span class="kw">WHERE</span> empresa_actual_name <span class="kw">ILIKE</span> <span class="str">'%banco%'</span>
+<span class="kw">LIMIT</span> 100;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Unir perfil de LinkedIn con su experiencia</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span> p.linkedin_num_id, p.url, p.empresa_actual_name,
+       e.orden, e.experiencia_title, e.experiencia_company
+<span class="kw">FROM</span> v_linkedin_perfiles p
+<span class="kw">JOIN</span> v_linkedin_experiencia e <span class="kw">USING</span> (perfil_id)
+<span class="kw">WHERE</span> p.linkedin_num_id = <span class="str">'1303436061'</span>
+<span class="kw">ORDER BY</span> e.orden;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Entidades con mayor huella pública</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span> entidad_id, huella_publica_score, huella_publica_ascii
+<span class="kw">FROM</span> v_clasificacion_entidades
+<span class="kw">ORDER BY</span> huella_publica_score <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> 100;</pre></div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Entidades contactables y bien identificadas</div>
+  <div class="sql-block"><pre><span class="kw">SELECT</span> entidad_id, identificacion_nivel, contactabilidad_nivel
+<span class="kw">FROM</span> v_clasificacion_entidades
+<span class="kw">WHERE</span> identificacion_nivel = <span class="str">'alta'</span>
+  <span class="kw">AND</span> contactabilidad_nivel = <span class="str">'contactable'</span>
+<span class="kw">LIMIT</span> 100;</pre></div>
+
   <div style="font-size:12px;color:var(--text3);margin-bottom:0.5rem">Ver todas las vistas disponibles</div>
   <div class="sql-block"><pre><span class="kw">SELECT</span> table_name
 <span class="kw">FROM</span> information_schema.views
@@ -325,7 +531,7 @@ relaciones.id_entidad_origen                   →  entidades._id</pre>
 </div>
 
 <script>
-const VISTAS = [{"id": "gt-guatecompras_representantes", "tabla": "relaciones", "vista": "v_relaciones", "nombre": "Guatecompras Relaciones", "origen": "Ministerio de Finanzas"}, {"id": "gt-guatecompras_proveedores", "tabla": "gt_guatecompras", "vista": "v_gt_guatecompras", "nombre": "Guatecompras Proveedores", "origen": "Ministerio de Finanzas"}, {"id": "gt-tse-2019-padron", "tabla": "tse_2019_padron", "vista": "v_tse_2019_padron", "nombre": "Padrón Electoral 2019", "origen": "Tribunal Supremo Electoral"}, {"id": "gt-tse-2023-padron", "tabla": "tse_2023_padron", "vista": "v_tse_2023_padron", "nombre": "Padrón Electoral 2023", "origen": "Tribunal Supremo Electoral"}, {"id": "gt-patronos-iggs", "tabla": "patronos_iggs", "vista": "v_patronos_iggs", "nombre": "Patronos ", "origen": "Instituto Guatemalteco de Seguridad Social"}, {"id": "gt-colegio-ingeniero", "tabla": "colegio_ingeniero", "vista": "v_colegio_ingeniero", "nombre": "Agremiados Colegio de Ingenierios", "origen": "Colegio de Ingenieros de Guatemala"}, {"id": "gt-colegio-abogados", "tabla": "colegio_abogados", "vista": "v_colegio_abogados", "nombre": "Agremiados Colegio de Abogados y Notarios", "origen": "Colegio de Abogados y Notarios de Guatemala"}, {"id": "gt-colegio-arquitectos", "tabla": "colegio_arquitectos", "vista": "v_colegio_arquitectos", "nombre": "Agremiados Colegio de Arquitectos", "origen": "Colegio de Arquitectos de Guatemala"}, {"id": "gt-empresa-precalificadas", "tabla": "empresa_precalificadas", "vista": "v_empresa_precalificadas", "nombre": "Registro de Precalificados de Obras", "origen": "Ministerio de Comunicaciones, Infraestructura y Viviend"}, {"id": "gt-gobernadores-departamentales", "tabla": "cargo_gobernadores", "vista": "v_cargo_gobernadores", "nombre": "Gobernadores departamentales", "origen": "Ministerio de Gobernación"}, {"id": "gt-financistas", "tabla": "gt_financistas", "vista": "v_gt_financistas", "nombre": "Financistas de Partidos Políticos", "origen": "Tribunal Supremo Electoral"}, {"id": "gt-rtu-juridicas", "tabla": "gt_rtu_juridicas", "vista": "v_gt_rtu_juridicas", "nombre": "Registro Tributario Unificado - Personas Jurídicas", "origen": "Superintendencia de Administración Tributaria"}, {"id": "gt-rtu-naturales", "tabla": "gt_rtu_naturales", "vista": "v_gt_rtu_naturales", "nombre": "Registro Tributario Unificado - Personas Naturales", "origen": "Superintendencia de Administración Tributaria"}, {"id": "gt-operacion_registral", "tabla": "operacion_registral", "vista": "v_operacion_registral", "nombre": "RGAE Operaciones Registrales", "origen": "Registro General de Adquisiciones del Estado"}, {"id": "gt-antejuicio", "tabla": "antejuicio", "vista": "v_antejuicio", "nombre": "Consulta de Antejuicios", "origen": "Organismo Judicial"}, {"id": "gt-beneficiario_programa_social", "tabla": "beneficiario_programa_social", "vista": "v_beneficiario_programa_social", "nombre": "Beneficiarios de Bono Familia", "origen": "Ministerio de Desarrollo Social de Guatemala"}, {"id": "gt-memorias-electorales", "tabla": "memoria_electoral", "vista": "v_memoria_electoral", "nombre": "Memorias Electorales", "origen": "Tribunal Supremo Electoral"}, {"id": "gt-registro_titulo_academico", "tabla": "registro_titulo_academico", "vista": "v_registro_titulo_academico", "nombre": "Títulos Registrados en CGC", "origen": "Contraloría General de Cuentas"}, {"id": "gt-recede", "tabla": "recede", "vista": "v_recede", "nombre": "Registro Central de Detenidos", "origen": "Organismo Judicial"}, {"id": "gt-solicitud_registro_marca", "tabla": "solicitud_registro_marca", "vista": "v_solicitud_registro_marca", "nombre": "Solicitud de registro de marcas", "origen": "Registro de Propiedad Intelectual"}, {"id": "gt-registro_laboral", "tabla": "registro_laboral", "vista": "v_registro_laboral", "nombre": "Trabajadores del Estado", "origen": "Información Pública de Oficio"}, {"id": "gt-edicto_rm", "tabla": "edicto_rm", "vista": "v_edicto_rm", "nombre": "Edictos Registro Mercantil", "origen": "Registro Mercantil"}, {"id": "gt-dicabi", "tabla": "relaciones_propietario", "vista": "v_relaciones_propietario", "nombre": "DICABI", "origen": "Ministerio de Finanzas"}, {"id": "gt-documento_judicial", "tabla": "documento_judicial", "vista": "v_documento_judicial", "nombre": "Documentos Judiciales CENADOJ", "origen": "Centro Nacional de Análisis y Documentación Judicial"}, {"id": "gt-cambio_nombre", "tabla": "cambio_nombre", "vista": "v_cambio_nombre", "nombre": "Cambio de nombre de marca RPI", "origen": "Registro de Propiedad Intelectual"}, {"id": "gt_pep_ministerios", "tabla": "gt_pep_ministerios", "vista": "v_gt_pep_ministerios", "nombre": "Listado PEP Ministerios", "origen": "Personas Expuestas Políticamente"}, {"id": "gt-auxiliar-funcion-publica-aduanera", "tabla": "auxiliar_funcion_publica_aduanera", "vista": "v_auxiliar_funcion_publica_aduanera", "nombre": "Auxiliares de la función pública", "origen": "Superintendencia de Administración Tributaria"}, {"id": "gt-derecho_minero", "tabla": "derecho_minero", "vista": "v_derecho_minero", "nombre": "Derechos Mineros", "origen": "Ministerio de Energía Minas"}, {"id": "gt-sanciones", "tabla": "sanciones", "vista": "v_sanciones", "nombre": "\tLista de sanciones internacionales", "origen": "Fuentes Internacionales"}];
+const VISTAS = [{"id": "gt-guatecompras_representantes", "tabla": "relaciones", "vista": "v_relaciones", "nombre": "Guatecompras Relaciones", "origen": "Ministerio de Finanzas"}, {"id": "gt-guatecompras_proveedores", "tabla": "gt_guatecompras", "vista": "v_gt_guatecompras", "nombre": "Guatecompras Proveedores", "origen": "Ministerio de Finanzas"}, {"id": "gt-tse-2019-padron", "tabla": "tse_2019_padron", "vista": "v_tse_2019_padron", "nombre": "Padrón Electoral 2019", "origen": "Tribunal Supremo Electoral"}, {"id": "gt-tse-2023-padron", "tabla": "tse_2023_padron", "vista": "v_tse_2023_padron", "nombre": "Padrón Electoral 2023", "origen": "Tribunal Supremo Electoral"}, {"id": "gt-patronos-iggs", "tabla": "patronos_iggs", "vista": "v_patronos_iggs", "nombre": "Patronos ", "origen": "Instituto Guatemalteco de Seguridad Social"}, {"id": "gt-colegio-ingeniero", "tabla": "colegio_ingeniero", "vista": "v_colegio_ingeniero", "nombre": "Agremiados Colegio de Ingenierios", "origen": "Colegio de Ingenieros de Guatemala"}, {"id": "gt-colegio-abogados", "tabla": "colegio_abogados", "vista": "v_colegio_abogados", "nombre": "Agremiados Colegio de Abogados y Notarios", "origen": "Colegio de Abogados y Notarios de Guatemala"}, {"id": "gt-colegio-arquitectos", "tabla": "colegio_arquitectos", "vista": "v_colegio_arquitectos", "nombre": "Agremiados Colegio de Arquitectos", "origen": "Colegio de Arquitectos de Guatemala"}, {"id": "gt-empresa-precalificadas", "tabla": "empresa_precalificadas", "vista": "v_empresa_precalificadas", "nombre": "Registro de Precalificados de Obras", "origen": "Ministerio de Comunicaciones, Infraestructura y Viviend"}, {"id": "gt-gobernadores-departamentales", "tabla": "cargo_gobernadores", "vista": "v_cargo_gobernadores", "nombre": "Gobernadores departamentales", "origen": "Ministerio de Gobernación"}, {"id": "gt-financistas", "tabla": "gt_financistas", "vista": "v_gt_financistas", "nombre": "Financistas de Partidos Políticos", "origen": "Tribunal Supremo Electoral"}, {"id": "gt-rtu-juridicas", "tabla": "gt_rtu_juridicas", "vista": "v_gt_rtu_juridicas", "nombre": "Registro Tributario Unificado - Personas Jurídicas", "origen": "Superintendencia de Administración Tributaria"}, {"id": "gt-rtu-naturales", "tabla": "gt_rtu_naturales", "vista": "v_gt_rtu_naturales", "nombre": "Registro Tributario Unificado - Personas Naturales", "origen": "Superintendencia de Administración Tributaria"}, {"id": "gt-operacion_registral", "tabla": "operacion_registral", "vista": "v_operacion_registral", "nombre": "RGAE Operaciones Registrales", "origen": "Registro General de Adquisiciones del Estado"}, {"id": "gt-antejuicio", "tabla": "antejuicio", "vista": "v_antejuicio", "nombre": "Consulta de Antejuicios", "origen": "Organismo Judicial"}, {"id": "gt-beneficiario_programa_social", "tabla": "beneficiario_programa_social", "vista": "v_beneficiario_programa_social", "nombre": "Beneficiarios de Bono Familia", "origen": "Ministerio de Desarrollo Social de Guatemala"}, {"id": "gt-memorias-electorales", "tabla": "memoria_electoral", "vista": "v_memoria_electoral", "nombre": "Memorias Electorales", "origen": "Tribunal Supremo Electoral"}, {"id": "gt-registro_titulo_academico", "tabla": "registro_titulo_academico", "vista": "v_registro_titulo_academico", "nombre": "Títulos Registrados en CGC", "origen": "Contraloría General de Cuentas"}, {"id": "gt-recede", "tabla": "recede", "vista": "v_recede", "nombre": "Registro Central de Detenidos", "origen": "Organismo Judicial"}, {"id": "gt-solicitud_registro_marca", "tabla": "solicitud_registro_marca", "vista": "v_solicitud_registro_marca", "nombre": "Solicitud de registro de marcas", "origen": "Registro de Propiedad Intelectual"}, {"id": "gt-registro_laboral", "tabla": "registro_laboral", "vista": "v_registro_laboral", "nombre": "Trabajadores del Estado", "origen": "Información Pública de Oficio"}, {"id": "gt-edicto_rm", "tabla": "edicto_rm", "vista": "v_edicto_rm", "nombre": "Edictos Registro Mercantil", "origen": "Registro Mercantil"}, {"id": "gt-dicabi", "tabla": "relaciones_propietario", "vista": "v_relaciones_propietario", "nombre": "DICABI", "origen": "Ministerio de Finanzas"}, {"id": "gt-documento_judicial", "tabla": "documento_judicial", "vista": "v_documento_judicial", "nombre": "Documentos Judiciales CENADOJ", "origen": "Centro Nacional de Análisis y Documentación Judicial"}, {"id": "gt-cambio_nombre", "tabla": "cambio_nombre", "vista": "v_cambio_nombre", "nombre": "Cambio de nombre de marca RPI", "origen": "Registro de Propiedad Intelectual"}, {"id": "gt_pep_ministerios", "tabla": "gt_pep_ministerios", "vista": "v_gt_pep_ministerios", "nombre": "Listado PEP Ministerios", "origen": "Personas Expuestas Políticamente"}, {"id": "gt-auxiliar-funcion-publica-aduanera", "tabla": "auxiliar_funcion_publica_aduanera", "vista": "v_auxiliar_funcion_publica_aduanera", "nombre": "Auxiliares de la función pública", "origen": "Superintendencia de Administración Tributaria"}, {"id": "gt-derecho_minero", "tabla": "derecho_minero", "vista": "v_derecho_minero", "nombre": "Derechos Mineros", "origen": "Ministerio de Energía Minas"}, {"id": "gt-sanciones", "tabla": "sanciones", "vista": "v_sanciones", "nombre": "\tLista de sanciones internacionales", "origen": "Fuentes Internacionales"}, {"id": "linkedin-perfiles", "tabla": "linkedin_perfiles", "vista": "v_linkedin_perfiles", "nombre": "Perfiles de LinkedIn", "origen": "LinkedIn"}, {"id": "linkedin-experiencia", "tabla": "linkedin_experiencia", "vista": "v_linkedin_experiencia", "nombre": "Experiencia laboral (LinkedIn)", "origen": "LinkedIn"}, {"id": "linkedin-educacion", "tabla": "linkedin_educacion", "vista": "v_linkedin_educacion", "nombre": "Educación (LinkedIn)", "origen": "LinkedIn"}, {"id": "linkedin-actividad", "tabla": "linkedin_actividad", "vista": "v_linkedin_actividad", "nombre": "Actividad (LinkedIn)", "origen": "LinkedIn"}, {"id": "linkedin-idiomas", "tabla": "linkedin_idiomas", "vista": "v_linkedin_idiomas", "nombre": "Idiomas (LinkedIn)", "origen": "LinkedIn"}, {"id": "linkedin-certificaciones", "tabla": "linkedin_certificaciones", "vista": "v_linkedin_certificaciones", "nombre": "Certificaciones (LinkedIn)", "origen": "LinkedIn"}, {"id": "clasificacion-entidades", "tabla": "entidad_clasificacion", "vista": "v_clasificacion_entidades", "nombre": "Clasificación de entidades", "origen": "Motor de Clasificación Interno"}];
 const ATRIBUTOS = [
   {
     "id": "gt-recede",
@@ -3521,6 +3727,726 @@ const ATRIBUTOS = [
     "tipo": "Texto",
     "ejemplo": "Fungió como MINISTRO DE AGRICULTURA, GANADERIA Y ALIMENTACION en el MINISTERIO DE AGRICULTURA, GANADERIA Y ALIMENTACION en el perÃ­odo 1/01/2000 hasta el 14/01/2000.",
     "descripcion": "Descripción detallada del cargo o función desempeñada."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "perfil_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Llave del perfil."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "linkedin_num_id",
+    "tipo": "Texto",
+    "ejemplo": "1303436061",
+    "descripcion": "ID numérico de LinkedIn."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "entidad_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "UUID de la entidad en Mongo/Elastic."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "entidad_en_mongo_prod",
+    "tipo": "Booleano",
+    "ejemplo": "true",
+    "descripcion": "Indica si la entidad existe en Mongo producción."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "url",
+    "tipo": "Texto",
+    "ejemplo": "https://www.linkedin.com/in/victoria-giron-339627304",
+    "descripcion": "URL real del perfil de LinkedIn."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "posicion",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Puesto actual del perfil."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "empresa_actual_name",
+    "tipo": "Texto",
+    "ejemplo": "TELUS International",
+    "descripcion": "Nombre de la empresa actual."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "empresa_actual_link",
+    "tipo": "Texto",
+    "ejemplo": "https://ph.linkedin.com/company/telus-digital?trk=public_profile_topcard-current-company",
+    "descripcion": "Link de la empresa actual."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "empresa_actual_company_id",
+    "tipo": "Texto",
+    "ejemplo": "telus-digital",
+    "descripcion": "ID de la empresa actual."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "empresa_actual_title",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Título del cargo en la empresa actual."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "empresa_actual_location",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Ubicación de la empresa actual."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "ubicacion_city",
+    "tipo": "Texto",
+    "ejemplo": "Guatemala City, Guatemala, Guatemala",
+    "descripcion": "Ciudad del perfil."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "ubicacion_location",
+    "tipo": "Texto",
+    "ejemplo": "Guatemala City",
+    "descripcion": "Ubicación general del perfil."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "ubicacion_country_code",
+    "tipo": "Texto",
+    "ejemplo": "GT",
+    "descripcion": "Código de país del perfil."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "conexiones",
+    "tipo": "Entero",
+    "ejemplo": "",
+    "descripcion": "Número de conexiones del perfil."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "seguidores",
+    "tipo": "Entero",
+    "ejemplo": "",
+    "descripcion": "Número de seguidores del perfil."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "etl_cargado_en",
+    "tipo": "Fecha",
+    "ejemplo": "",
+    "descripcion": "Fecha de carga del registro vía ETL."
+  },
+  {
+    "id": "linkedin-perfiles",
+    "tabla": "linkedin_perfiles",
+    "fuente": "LinkedIn",
+    "atributo": "dw_modelado_en",
+    "tipo": "Fecha",
+    "ejemplo": "",
+    "descripcion": "Fecha de modelado del registro en el data warehouse."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "perfil_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Llave del perfil dueño de la experiencia — llave más estable para joins internos."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "linkedin_num_id",
+    "tipo": "Texto",
+    "ejemplo": "1303436061",
+    "descripcion": "ID numérico de LinkedIn del perfil dueño de la experiencia."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "orden",
+    "tipo": "Entero",
+    "ejemplo": "",
+    "descripcion": "Orden de la experiencia dentro del perfil."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_url",
+    "tipo": "Texto",
+    "ejemplo": "https://ph.linkedin.com/company/telus-digital",
+    "descripcion": "URL de la empresa de la experiencia."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_title",
+    "tipo": "Texto",
+    "ejemplo": "Bachillerato en computacion",
+    "descripcion": "Título o puesto de la experiencia."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_company",
+    "tipo": "Texto",
+    "ejemplo": "TELUS International",
+    "descripcion": "Nombre de la empresa de la experiencia."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_company_id",
+    "tipo": "Texto",
+    "ejemplo": "telus-digital",
+    "descripcion": "ID de la empresa de la experiencia."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_company_logo_url",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "URL del logo de la empresa de la experiencia."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_subtitle",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Subtítulo de la experiencia, ej. tipo de empleo."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_location",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Ubicación asociada a la experiencia."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_start_date",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Fecha de inicio de la experiencia."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_end_date",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Fecha de fin de la experiencia."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_duration",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Duración de la experiencia en formato largo."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_duration_short",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Duración de la experiencia en formato corto."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_description",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Descripción de la experiencia en texto plano."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_description_html",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Descripción de la experiencia en formato HTML."
+  },
+  {
+    "id": "linkedin-experiencia",
+    "tabla": "linkedin_experiencia",
+    "fuente": "LinkedIn",
+    "atributo": "experiencia_positions",
+    "tipo": "JSON",
+    "ejemplo": "",
+    "descripcion": "Posiciones agrupadas cuando la experiencia tiene varios cargos dentro de la misma empresa."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "perfil_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Llave del perfil dueño del registro educativo."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "linkedin_num_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "ID numérico de LinkedIn del perfil dueño del registro educativo."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "orden",
+    "tipo": "Entero",
+    "ejemplo": "",
+    "descripcion": "Orden del registro educativo dentro del perfil."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "educacion_url",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "URL de la institución educativa."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "educacion_title",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Nombre de la institución educativa."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "educacion_degree",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Grado o título obtenido."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "educacion_field",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Campo o área de estudio."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "educacion_start_year",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Año de inicio de los estudios."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "educacion_end_year",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Año de fin de los estudios."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "educacion_institute_logo_url",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "URL del logo de la institución educativa."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "educacion_description",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Descripción del registro educativo en texto plano."
+  },
+  {
+    "id": "linkedin-educacion",
+    "tabla": "linkedin_educacion",
+    "fuente": "LinkedIn",
+    "atributo": "educacion_description_html",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Descripción del registro educativo en formato HTML."
+  },
+  {
+    "id": "linkedin-actividad",
+    "tabla": "linkedin_actividad",
+    "fuente": "LinkedIn",
+    "atributo": "perfil_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Llave del perfil dueño de la actividad."
+  },
+  {
+    "id": "linkedin-actividad",
+    "tabla": "linkedin_actividad",
+    "fuente": "LinkedIn",
+    "atributo": "linkedin_num_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "ID numérico de LinkedIn del perfil dueño de la actividad."
+  },
+  {
+    "id": "linkedin-actividad",
+    "tabla": "linkedin_actividad",
+    "fuente": "LinkedIn",
+    "atributo": "orden",
+    "tipo": "Entero",
+    "ejemplo": "",
+    "descripcion": "Orden de la actividad dentro del perfil."
+  },
+  {
+    "id": "linkedin-actividad",
+    "tabla": "linkedin_actividad",
+    "fuente": "LinkedIn",
+    "atributo": "actividad_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "ID de la publicación o actividad en LinkedIn."
+  },
+  {
+    "id": "linkedin-actividad",
+    "tabla": "linkedin_actividad",
+    "fuente": "LinkedIn",
+    "atributo": "actividad_title",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Título o texto de la actividad."
+  },
+  {
+    "id": "linkedin-actividad",
+    "tabla": "linkedin_actividad",
+    "fuente": "LinkedIn",
+    "atributo": "actividad_link",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Enlace a la publicación de la actividad."
+  },
+  {
+    "id": "linkedin-actividad",
+    "tabla": "linkedin_actividad",
+    "fuente": "LinkedIn",
+    "atributo": "actividad_interaction",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Tipo de interacción del perfil con la actividad, ej. le gusta, comentó, compartió."
+  },
+  {
+    "id": "linkedin-actividad",
+    "tabla": "linkedin_actividad",
+    "fuente": "LinkedIn",
+    "atributo": "actividad_img",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "URL de la imagen asociada a la actividad."
+  },
+  {
+    "id": "linkedin-idiomas",
+    "tabla": "linkedin_idiomas",
+    "fuente": "LinkedIn",
+    "atributo": "perfil_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Llave del perfil dueño del idioma."
+  },
+  {
+    "id": "linkedin-idiomas",
+    "tabla": "linkedin_idiomas",
+    "fuente": "LinkedIn",
+    "atributo": "linkedin_num_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "ID numérico de LinkedIn del perfil dueño del idioma."
+  },
+  {
+    "id": "linkedin-idiomas",
+    "tabla": "linkedin_idiomas",
+    "fuente": "LinkedIn",
+    "atributo": "orden",
+    "tipo": "Entero",
+    "ejemplo": "",
+    "descripcion": "Orden del idioma dentro del perfil."
+  },
+  {
+    "id": "linkedin-idiomas",
+    "tabla": "linkedin_idiomas",
+    "fuente": "LinkedIn",
+    "atributo": "idioma_title",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Nombre del idioma."
+  },
+  {
+    "id": "linkedin-idiomas",
+    "tabla": "linkedin_idiomas",
+    "fuente": "LinkedIn",
+    "atributo": "idioma_subtitle",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Nivel de dominio del idioma."
+  },
+  {
+    "id": "linkedin-certificaciones",
+    "tabla": "linkedin_certificaciones",
+    "fuente": "LinkedIn",
+    "atributo": "perfil_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Llave del perfil dueño de la certificación."
+  },
+  {
+    "id": "linkedin-certificaciones",
+    "tabla": "linkedin_certificaciones",
+    "fuente": "LinkedIn",
+    "atributo": "linkedin_num_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "ID numérico de LinkedIn del perfil dueño de la certificación."
+  },
+  {
+    "id": "linkedin-certificaciones",
+    "tabla": "linkedin_certificaciones",
+    "fuente": "LinkedIn",
+    "atributo": "orden",
+    "tipo": "Entero",
+    "ejemplo": "",
+    "descripcion": "Orden de la certificación dentro del perfil."
+  },
+  {
+    "id": "linkedin-certificaciones",
+    "tabla": "linkedin_certificaciones",
+    "fuente": "LinkedIn",
+    "atributo": "certificacion_title",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Nombre de la certificación."
+  },
+  {
+    "id": "linkedin-certificaciones",
+    "tabla": "linkedin_certificaciones",
+    "fuente": "LinkedIn",
+    "atributo": "certificacion_subtitle",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Entidad emisora de la certificación."
+  },
+  {
+    "id": "linkedin-certificaciones",
+    "tabla": "linkedin_certificaciones",
+    "fuente": "LinkedIn",
+    "atributo": "certificacion_meta",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "Metadato adicional de la certificación, ej. fecha de emisión."
+  },
+  {
+    "id": "linkedin-certificaciones",
+    "tabla": "linkedin_certificaciones",
+    "fuente": "LinkedIn",
+    "atributo": "certificacion_credential_id",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "ID de la credencial de la certificación."
+  },
+  {
+    "id": "linkedin-certificaciones",
+    "tabla": "linkedin_certificaciones",
+    "fuente": "LinkedIn",
+    "atributo": "certificacion_credential_url",
+    "tipo": "Texto",
+    "ejemplo": "",
+    "descripcion": "URL de verificación de la credencial."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "entidad_id",
+    "tipo": "Texto",
+    "ejemplo": "14584ece-d734-531f-942a-1ab927563669",
+    "descripcion": "Llave lógica — UUID de la entidad."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "huella_publica_score",
+    "tipo": "Decimal",
+    "ejemplo": "166.1250",
+    "descripcion": "Puntaje numérico de cuánta información pública existe."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "huella_publica_estrellas",
+    "tipo": "Entero",
+    "ejemplo": "5",
+    "descripcion": "Clasificación de 0 a 5 estrellas."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "huella_publica_ascii",
+    "tipo": "Texto",
+    "ejemplo": "*****",
+    "descripcion": "Estrellas en formato texto."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "identificacion_nivel",
+    "tipo": "Texto",
+    "ejemplo": "alta",
+    "descripcion": "Nivel de identificación disponible: ninguna / baja / media / alta."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "identificacion_score",
+    "tipo": "Entero",
+    "ejemplo": "13",
+    "descripcion": "Puntaje numérico de identificación."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "contactabilidad_nivel",
+    "tipo": "Texto",
+    "ejemplo": "contactable",
+    "descripcion": "Nivel de contacto: no_contactable / parcialmente_contactable / contactable."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "contactabilidad_score",
+    "tipo": "Entero",
+    "ejemplo": "3",
+    "descripcion": "Puntaje numérico de contactabilidad."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "clasificacion",
+    "tipo": "JSON",
+    "ejemplo": "",
+    "descripcion": "JSON completo con los tres bloques originales de la clasificación."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "clasificacion_updated_at",
+    "tipo": "Fecha",
+    "ejemplo": "",
+    "descripcion": "Fecha de última actualización de la clasificación."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "created_at",
+    "tipo": "Fecha",
+    "ejemplo": "",
+    "descripcion": "Fecha de creación de la fila."
+  },
+  {
+    "id": "clasificacion-entidades",
+    "tabla": "entidad_clasificacion",
+    "fuente": "Motor de Clasificación Interno",
+    "atributo": "updated_at",
+    "tipo": "Fecha",
+    "ejemplo": "",
+    "descripcion": "Fecha de última actualización de la fila."
   }
 ];
 
